@@ -92,6 +92,7 @@ from scratch step by step.
 
 ### Create folder structure
 
+
 Here is our Flask website structure:
 
 ```
