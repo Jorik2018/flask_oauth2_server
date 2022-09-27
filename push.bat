@@ -6,6 +6,6 @@ IF "%1"=="" (
 @ECHO ON
 git add .
 git commit -m %1
-git push -u origin
+git push -u origin main
 rem git push heroku
 :end
