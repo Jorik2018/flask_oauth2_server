@@ -36,6 +36,7 @@ def home():
             return redirect(next_page)
         return redirect(url_for('.home'))
     user = current_user()
+    print(user)
     if user:
         clients = OAuth2Client.query.filter_by(user_id=user.id).all()
     else:
@@ -46,7 +47,8 @@ def home():
 
 @bp.route('/logout')
 def logout():
-    del session['id']
+    session.pop('id',None)  
+    print(session)
     return redirect(url_for('.home'))
 
 
