@@ -34,7 +34,7 @@ def home():
         next_page = request.args.get('next')
         if next_page:
             return redirect(next_page)
-        return redirect(url_for('/'))
+        return redirect(url_for('.home'))
     user = current_user()
     if user:
         clients = OAuth2Client.query.filter_by(user_id=user.id).all()
@@ -47,7 +47,7 @@ def home():
 @bp.route('/logout')
 def logout():
     del session['id']
-    return redirect(url_for('/'))
+    return redirect(url_for('.home'))
 
 
 @bp.route('/create_client', methods=('GET', 'POST'))
