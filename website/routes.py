@@ -47,7 +47,7 @@ def home():
 @bp.route('/logout')
 def logout():
     del session['id']
-    return redirect('/')
+    return redirect(url_for('/'))
 
 
 @bp.route('/create_client', methods=('GET', 'POST'))
