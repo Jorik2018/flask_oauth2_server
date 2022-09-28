@@ -1,0 +1,2 @@
+APPLICATION_ROOT='/oauth'
+SCRIPT_NAME='/oauth'
