@@ -21,7 +21,7 @@ def create_app(config=None):
             app.config.update(config)
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
-
+    print( app.config)
     setup_app(app)
     return app
 
@@ -34,4 +34,4 @@ def setup_app(app):
 
     db.init_app(app)
     config_oauth(app)
-    app.register_blueprint(bp, url_prefix='')
+    app.register_blueprint(bp, url_prefix=app.config['APPLICATION_ROOT'])
