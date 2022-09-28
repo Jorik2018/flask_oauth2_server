@@ -7,9 +7,7 @@ from authlib.oauth2 import OAuth2Error
 from .models import db, User, OAuth2Client
 from .oauth2 import authorization, require_oauth
 
-
 bp = Blueprint('home', __name__)
-
 
 def current_user():
     if 'id' in session:
@@ -36,7 +34,7 @@ def home():
         next_page = request.args.get('next')
         if next_page:
             return redirect(next_page)
-        return redirect('/')
+        return redirect(url_for('/'))
     user = current_user()
     if user:
         clients = OAuth2Client.query.filter_by(user_id=user.id).all()
@@ -56,7 +54,7 @@ def logout():
 def create_client():
     user = current_user()
     if not user:
-        return redirect('/')
+        return redirect(url_for('/'))
     if request.method == 'GET':
         return render_template('create_client.html')
 

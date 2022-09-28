@@ -1,5 +1,5 @@
 @ECHO OFF
-IF "%1"=="" (
+IF (%1)==() (
     echo "You must put a message to push changes";
     goto end
 )
