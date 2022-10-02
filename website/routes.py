@@ -12,6 +12,7 @@ bp = Blueprint('home', __name__)
 def current_user():
     if 'id' in session:
         uid = session['id']
+        print(uid)
         return User.query.get(uid)
     return None
 
@@ -19,29 +20,46 @@ def current_user():
 def split_by_crlf(s):
     return [v for v in s.splitlines() if v]
 
+@bp.route('/register', methods=['POST'])
+def user_register_post():
+    json = request.get_json()
+    name = json['name']
+    password = json['pass']
+    import hashlib
+    result = hashlib.md5(password.encode())
+    password = result.hexdigest()
+    user = User(name=name,password=password)
+    db.session.add(user)
+    db.session.commit()
+    # if user is not just to log in, but need to head back to the auth page, then go for it
+    return str(user.id)
 
 @bp.route('/', methods=('GET', 'POST'))
 def home():
     if request.method == 'POST':
-        username = request.form.get('username')
-        user = User.query.filter_by(username=username).first()
+        name = request.form.get('name')
+        import hashlib
+        from sqlalchemy import or_,and_
+        password = request.form.get('password')
+        password = hashlib.md5(password.encode())
+        user = User.query.filter(and_(or_(User.name == name, User.mail == name),User.password == password.hexdigest())).first()
         if not user:
-            user = User(username=username)
-            db.session.add(user)
-            db.session.commit()
+            return "Unidentified!"
         session['id'] = user.id
         # if user is not just to log in, but need to head back to the auth page, then go for it
         next_page = request.args.get('next')
         if next_page:
             return redirect(next_page)
         return redirect(url_for('.home'))
+
+
     user = current_user()
-    print(user)
+    
     if user:
         clients = OAuth2Client.query.filter_by(user_id=user.id).all()
     else:
         clients = []
-
+    print(clients)
     return render_template('home.html', user=user, clients=clients)
 
 
@@ -51,12 +69,11 @@ def logout():
     print(session)
     return redirect(url_for('.home'))
 
-
 @bp.route('/create_client', methods=('GET', 'POST'))
 def create_client():
     user = current_user()
     if not user:
-        return redirect(url_for('/'))
+        return redirect(url_for('.home'))
     if request.method == 'GET':
         return render_template('create_client.html')
 
@@ -87,10 +104,10 @@ def create_client():
 
     db.session.add(client)
     db.session.commit()
-    return redirect('/')
+    return redirect(url_for('.home'))
 
 
-@bp.route('/oauth/authorize', methods=['GET', 'POST'])
+@bp.route('/authorize', methods=['GET', 'POST'])
 def authorize():
     user = current_user()
     # if user log status is not true (Auth server), then to log it in
@@ -112,12 +129,12 @@ def authorize():
     return authorization.create_authorization_response(grant_user=grant_user)
 
 
-@bp.route('/oauth/token', methods=['POST'])
+@bp.route('/token', methods=['POST'])
 def issue_token():
     return authorization.create_token_response()
 
 
-@bp.route('/oauth/revoke', methods=['POST'])
+@bp.route('/revoke', methods=['POST'])
 def revoke_token():
     return authorization.create_endpoint_response('revocation')
 
@@ -126,4 +143,4 @@ def revoke_token():
 @require_oauth('profile')
 def api_me():
     user = current_token.user
-    return jsonify(id=user.id, username=user.username)
+    return jsonify(id=user.id, name=user.name)
