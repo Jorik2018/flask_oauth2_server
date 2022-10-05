@@ -3,4 +3,5 @@ SET APPLICATION_ROOT=/api/oauth
 SET SCRIPT_NAME=/api/oauth
 SET FLASK_ENV=development
 SET DEBUG=True
+
 flask run
