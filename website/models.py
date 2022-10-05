@@ -8,7 +8,6 @@ from authlib.integrations.sqla_oauth2 import (
 
 db = SQLAlchemy()
 
-
 class User(db.Model):
     __tablename__ = 'dru_users'
     id = db.Column('uid',db.Integer, primary_key=True)
