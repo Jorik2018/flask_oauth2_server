@@ -101,11 +101,10 @@ virtualenv-clone = "==0.5.7"
 werkzeug = "==2.0.2"
 wrapt = "==1.13.3"
 zipp = "==3.6.0"
-gunicorn = "*"
 mysql-connector-python = "*"
 flask-restplus = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
