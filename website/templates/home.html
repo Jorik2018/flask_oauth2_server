@@ -1,3 +1,9 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<div class="container">
+  <div style="text-align:center;padding:40px;">
+  <img src="https://www.regionancash.gob.pe/images/logo2018.png" style="width:100%;max-width: 300px;"/>
+</div>
 {% if user %}
 <style>pre{white-space:wrap}</style>
 <div>Logged in as <strong>{{user}}</strong> (<a href="{{ url_for('.logout') }}">Log Out</a>)</div>
@@ -19,9 +25,43 @@
 <br><a href="{{ url_for('.create_client') }}">Create Client</a>
 
 {% else %}
-<form action="" method="post">
-  <input type="text" name="name" required="required" placeholder="name or email">
-  <input type="password" name="password" required="required" placeholder="password">
-  <button type="submit">Login / Signup</button>
-</form>
+<div class="jumbotron">
+
+  <form action="" method="POST">
+      <!-- Email input -->
+      <div class="form-outline mb-4">
+        <label class="form-label" for="name">Email address</label>
+        <input name="name" id="name" required="required" class="form-control" />
+      </div>
+    
+      <!-- Password input -->
+      <div class="form-outline mb-4">
+        <label class="form-label" for="pass">Password</label>
+        <input type="password" name="password" required="required" id="pass" class="form-control" />        
+      </div>
+    
+      <!-- 2 column grid layout for inline styling -->
+      <!--div class="row mb-4">
+        <div class="col d-flex justify-content-center">
+        
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
+            <label class="form-check-label" for="form2Example31"> Remember me </label>
+          </div>
+        </div>
+    
+        <div class="col">
+          <a href="#!">Forgot password?</a>
+        </div>
+      </div-->
+    
+      <!-- Submit button -->
+      <button type="submit" class="btn btn-primary btn-block mb-4" style="margin-top:20px">Iniciar Sesión</button>
+</div>
 {% endif %}
+</div>
+<style>
+  body{
+    background-color: #0f62ac;
+  }
+</style>

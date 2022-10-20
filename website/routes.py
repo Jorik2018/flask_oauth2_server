@@ -1,6 +1,6 @@
 import time
 from flask import Blueprint, request, session, url_for
-from flask import render_template, redirect, jsonify
+from flask import render_template, redirect, jsonify,Response
 from werkzeug.security import gen_salt
 from authlib.integrations.flask_oauth2 import current_token
 from authlib.oauth2 import OAuth2Error
@@ -69,11 +69,20 @@ def logout():
     print(session)
     return redirect(url_for('.home'))
 
+#@app.errorhandler(401)
+#def custom_401(error):
+#   return Response('<Why access is denied string goes here...>', 401, {'WWW-Authenticate':'Basic realm="Login Required"'})
+
 @bp.route('/create_client', methods=('GET', 'POST'))
 def create_client():
     user = current_user()
+    
+
     if not user:
         return redirect(url_for('.home'))
+    if user.id!=1:
+        return Response('<Why access is denied string goes here...>', 401, {'WWW-Authenticate':'Basic realm="Login Required"'})
+
     if request.method == 'GET':
         return render_template('create_client.html')
 
@@ -133,11 +142,9 @@ def authorize():
 def issue_token():
     return authorization.create_token_response()
 
-
 @bp.route('/revoke', methods=['POST'])
 def revoke_token():
     return authorization.create_endpoint_response('revocation')
-
 
 @bp.route('/api/me')
 @require_oauth('profile')

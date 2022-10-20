@@ -103,6 +103,7 @@ wrapt = "==1.13.3"
 zipp = "==3.6.0"
 gunicorn = "*"
 mysql-connector-python = "*"
+flask-restplus = "*"
 
 [dev-packages]
 
