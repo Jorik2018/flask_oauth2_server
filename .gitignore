@@ -1,4 +1,4 @@
-*.sqlite
+app/*.db
 *.pyc
 
 .env
