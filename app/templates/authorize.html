@@ -1,19 +1,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
-<p>The application <strong>{{grant.client.client_name}}</strong> is requesting:
+<div class="card" style="padding: 20px;
+border-radius: 10px;
+border: 1px solid gainsboro;
+margin: 20px;"><div class="card-body">
+<p>La applicación <strong>{{grant.client.client_name}}</strong> is requesting:
 <strong>{{ grant.request.scope }}</strong>
 </p>
 
 <p>
   from You - a.k.a. <strong>{{ user.username }}</strong>
 </p>
-
+<div class="container " style="text-align:center">
 <form action="" method="post">
-  <label>
-    <input type="checkbox" name="confirm">
-    <span>Consent?</span>
-  </label>
+
   {% if not user %}
   <p>You haven't logged in. Log in with:</p>
   <div>
@@ -21,5 +22,21 @@
   </div>
   {% endif %}
   <br>
-  <button>Submit</button>
+  <button class="btn btn-danger">Rechazar</button>
+  <button class="btn btn-success">Autorizar</button>
 </form>
+
+</div>
+</div></div>
+<script>
+  document.querySelector('.btn-success').onclick=function(){
+    var form=document.querySelector('form');
+    var input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "confirm";
+                input.value=1;
+                form.appendChild(input);
+    form.submit();
+    return false;
+  }
+</script>

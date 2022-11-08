@@ -24,6 +24,7 @@ def split_by_crlf(s):
 def user_register_post():
     json = request.get_json()
     name = json['name']
+    mail = json['mail']
     password = json['pass']
     import hashlib
     result = hashlib.md5(password.encode())
@@ -34,20 +35,27 @@ def user_register_post():
     # if user is not just to log in, but need to head back to the auth page, then go for it
     return str(user.id)
 
+@bp.route('', methods=('GET', 'POST'))
 @bp.route('/', methods=('GET', 'POST'))
 def home():
     if request.method == 'POST':
-        name = request.form.get('name')
+        name = str(request.form.get('name')).lower()
         import hashlib
-        from sqlalchemy import or_,and_
-        password = request.form.get('password')
+        from sqlalchemy import or_,and_,func
+        password = request.form.get('pass')
+        if request.is_json:
+            json=request.get_json()
+            password=json['pass']
+            name = str(json['mail']).lower()
         password = hashlib.md5(password.encode())
-        user = User.query.filter(and_(or_(User.name == name, User.mail == name),User.password == password.hexdigest())).first()
+        user = User.query.filter(and_(or_(func.lower(User.name) == name, func.lower(User.mail) == name),User.password == password.hexdigest())).first()
         if not user:
-            return "Unidentified!"
+            return jsonify({"error":'No found'})
         session['id'] = user.id
         # if user is not just to log in, but need to head back to the auth page, then go for it
         next_page = request.args.get('next')
+        print('hola')
+
         if next_page:
             return redirect(next_page)
         return redirect(url_for('.home'))

@@ -103,6 +103,8 @@ zipp = "==3.6.0"
 flask-restplus = "*"
 python-dotenv = "*"
 flask = "*"
+flask-cors = "*"
+mysql-connector-python = "*"
 
 [dev-packages]
 

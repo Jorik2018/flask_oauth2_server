@@ -41,4 +41,7 @@ app = create_app({
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     'SQLALCHEMY_DATABASE_URI':os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///' + os.path.join(basedir, 'test.db'))
 })
+##from flask_cors import CORS
+
+#CORS(app)
 
