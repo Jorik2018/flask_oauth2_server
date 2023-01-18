@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+        crossorigin="anonymous"></script>
+
+    <title>INICIAR SESIÓN - GOBIERNO REGIONAL DE ANCASH</title>
+
+    <style>
+        body {
+            background-image: url('http://web.regionancash.gob.pe/fs/images/background/landscape-2639459_1280-700x466.jpg');
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: 100% 100%;
+        }
+
+        .bg-glass {
+            background-color: hsla(0, 0%, 100%, 0.7) !important;
+        }
+
+        .card-header {
+            background-color: #0f62ac;
+            /* height: 8em; */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Section: Design Block -->
+    <section class="background-radial-gradient overflow-hidden">
+        <div class="container px-4 pt-5 px-md-5 text-center text-lg-start mt-5 border-white">
+
+            {% if user %}
+            <!-- <style>
+              pre {
+                white-space: wrap
+              }
+            </style> -->
+            <div>Logged in as <strong>{{user}}</strong>
+
+                (<a href="{{ url_for('.logout') }}">Log Out</a>)
+            </div>
+
+            {% for client in clients %}
+            <pre>
+          <strong>Client Info</strong>
+            {%- for key in client.client_info %}
+            <strong>{{ key }}: </strong>{{ client.client_info[key] }}
+            {%- endfor %}
+          <strong>Client Metadata</strong>
+            {%- for key in client.client_metadata %}
+            <strong>{{ key }}: </strong>{{ client.client_metadata[key] }}
+            {%- endfor %}
+          </pre>
+            <hr>
+            {% endfor %}
+
+            <br><a href="{{ url_for('.create_client') }}">Create Client</a>
+
+            {% else %}
+
+            <div class="row gx-lg-5 align-items-center mb-5">
+                <div class="col-lg-3 mb-lg-0" style="z-index: 10">
+                </div>
+
+                <div class="col-lg-6 mb-lg-0 position-relative">
+
+                    <div class="card bg-glass">
+                        <div class="card-header text-center">
+                            <img src="http://web.regionancash.gob.pe/fs/images/logo2018.png" alt=""
+                                class="img img-responsive img-fluid my-2" style="max-width: 15em;">
+                        </div>
+                        <div class="card-body px-4 pt-5 px-md-5">
+                            <form action="" method="POST">
+                                <!-- Email input -->
+                                <div class="form-outline mb-4">
+                                    <label class="form-label fw-bold" for="name">Correo Electrónico: <span
+                                            style="color: red;">*</span></label>
+                                    <input name="name" id="name" required="required" class="form-control" />
+                                </div>
+
+                                <!-- Password input -->
+                                <div class="form-outline mb-4">
+                                    <label class="form-label fw-bold" for="pass">Contraseña: <span
+                                            style="color: red;">*</span></label>
+                                    <input type="password" name="pass" required="required" id="pass"
+                                        class="form-control" />
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <!-- Checkbox -->
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input me-2" type="checkbox" value=""
+                                            id="form2Example3" />
+                                        <label class="form-check-label" for="form2Example3">
+                                            Recuerdame
+                                        </label>
+                                    </div>
+                                    <a href="#" class="text-primary">Olvido su contraseña?</a>
+                                </div>
+
+                                <div class="text-center text-lg-start mt-4">
+                                    <div class="d-grid gap-2 mb-2">
+                                        <button class="btn btn-danger fw-bold" type="submit">Iniciar Sesión</button>
+                                    </div>
+                                    <a href="#" class="fw-bold text-primary">Crear Nueva Cuenta</a>
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="card-footer text-center">
+                            <p class="text-secondary fw-bold m-1 fs-6">Subgerencia de Tecnologías de la Información e Innovación - SGTII
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% endif %}
+
+        </div>
+    </section>
+    <!-- Section: Design Block -->
+
+</body>
+
+</html>

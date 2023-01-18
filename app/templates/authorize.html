@@ -1,42 +1,82 @@
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="card" style="padding: 20px;
-border-radius: 10px;
-border: 1px solid gainsboro;
-margin: 20px;"><div class="card-body">
-<p>La applicación <strong>{{grant.client.client_name}}</strong> is requesting:
-<strong>{{ grant.request.scope }}</strong>
-</p>
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+    crossorigin="anonymous"></script>
 
-<p>
-  from You - a.k.a. <strong>{{ user.name }}</strong>
-</p>
-<div class="container " style="text-align:center">
-<form action="" method="post">
+  <title>AUTORIZACIÓN DE INICIO DE SESIÓN - GOBIERNO REGIONAL DE ANCASH</title>
+  <style>
+    .card-header {
+      background-color: #0f62ac;
+    }
+  </style>
+</head>
 
-  {% if not user %}
-  <p>You haven't logged in. Log in with:</p>
-  <div>
-    <input type="text" name="username">
+<body class="" style="background-color: #E1E2E1;">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-3">
+
+      </div>
+      <div class="col-md-6 mt-5 pt-5">
+        <div class="card rounded-3 shadow">
+          <form action="" method="post"></form>
+          <div class="card-header text-center">
+            <img src="http://web.regionancash.gob.pe/fs/images/logo2018.png" alt=""
+              class="img img-responsive img-fluid my-2" style="max-width: 15em;">
+          </div>
+          <div class="card-body p-4 text-center">
+
+            <p>La applicación <strong>{{grant.client.client_name}}</strong> está solicitando su autorización:
+              <strong>{{ grant.request.scope }}</strong>
+            </p>
+
+            <p>
+              Usuario: <strong>{{ user.name }}</strong>
+            </p>
+
+            {% if not user %}
+            <p>No has iniciado sesión. Inicia sesión con:</p>
+            <div>
+              <input class="form-control" type="text" name="username">
+            </div>
+            {% endif %}
+
+          </div>
+          <div class="card-footer d-flex">
+            <button type="button" class="btn btn-lg btn-danger fs-6 text-decoration-none col-6 m-0 border shadow">No,
+              Rechazar</button>
+            <button type="button"
+              class="btn btn-lg btn-success fs-6 text-decoration-none col-6 m-0 border shadow"><strong>Sí,
+                Autorizar</strong></button>
+          </div>
+          </form>
+
+
+        </div>
+      </div>
+    </div>
   </div>
-  {% endif %}
-  <br>
-  <button class="btn btn-danger">Rechazar</button>
-  <button class="btn btn-success">Autorizar</button>
-</form>
-
-</div>
-</div></div>
+</body>
 <script>
-  document.querySelector('.btn-success').onclick=function(){
-    var form=document.querySelector('form');
+  document.querySelector('.btn-success').onclick = function () {
+    var form = document.querySelector('form');
     var input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "confirm";
-                input.value=1;
-                form.appendChild(input);
+    input.type = "hidden";
+    input.name = "confirm";
+    input.value = 1;
+    form.appendChild(input);
     form.submit();
     return false;
   }
 </script>
+
+</html>
