@@ -16,7 +16,7 @@ class User(db.Model):
     password = db.Column('pass',db.String(32))
 
     def __str__(self):
-        return self.name or 'Empty'
+        return 'name:'+(self.name or 'Empty')
 
     def get_user_id(self):
         return self.id

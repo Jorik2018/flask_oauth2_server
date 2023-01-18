@@ -132,7 +132,7 @@ def authorize():
         return redirect(url_for('home.home', next=request.url))
     if request.method == 'GET':
         try:
-            grant = authorization.get_consent_grant(end_user=user)
+            grant ={'client':True,'request':True} #authorization.get_consent_grant(end_user=user)
         except OAuth2Error as error:
             return error.error
         return render_template('authorize.html', user=user, grant=grant)
@@ -143,6 +143,8 @@ def authorize():
         grant_user = user
     else:
         grant_user = None
+    print(grant_user)
+    print('create_authorization_response')
     return authorization.create_authorization_response(grant_user=grant_user)
 
 
