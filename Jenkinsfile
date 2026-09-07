@@ -116,22 +116,25 @@ pipeline {
             }
         }
 
-        stage('Stop Service') {
-            steps {
-                bat '''
-                    @echo off
+stage('Stop Service') {
+    steps {
+        bat '''
+            @echo off
 
-                    sc query "%SERVICE_NAME%" >nul 2>&1
+            sc query "%SERVICE_NAME%" >nul 2>&1
 
-                    if %ERRORLEVEL% EQU 0 (
-                        echo Stopping existing service...
-                        net stop "%SERVICE_NAME%" >nul 2>&1
-                    ) else (
-                        echo Service does not exist yet.
-                    )
-                '''
-            }
-        }
+            if %ERRORLEVEL% EQU 0 (
+                echo Stopping existing service...
+                net stop "%SERVICE_NAME%" >nul 2>&1
+                echo Service stopped.
+            ) else (
+                echo Service does not exist yet. First deployment.
+            )
+
+            exit /b 0
+        '''
+    }
+}
 
         stage('Deploy Files') {
             steps {
