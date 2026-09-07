@@ -4,6 +4,7 @@ from .models import db
 from .oauth2 import config_oauth
 from .routes import bp
 
+
 def create_app(config=None):
     app = Flask(__name__)
 
@@ -21,27 +22,37 @@ def create_app(config=None):
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
 
-    print( app.config)
+    print(app.config)
+
     setup_app(app)
+
     return app
 
 
 def setup_app(app):
-    # Create tables if they do not exist already
-    @app.before_first_request
-    def create_tables():
-        db.create_all()
     db.init_app(app)
     config_oauth(app)
-    app.register_blueprint(bp, url_prefix=app.config['APPLICATION_ROOT'])
+    app.register_blueprint(
+        bp,
+        url_prefix=app.config['APPLICATION_ROOT']
+    )
+
+    # Create tables if they do not exist already
+    with app.app_context():
+        db.create_all()
+
+
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 app = create_app({
     'SECRET_KEY': 'secret',
     'OAUTH2_REFRESH_TOKEN_GENERATOR': True,
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'SQLALCHEMY_DATABASE_URI':os.environ.get('SQLALCHEMY_DATABASE_URI', 'sqlite:///' + os.path.join(basedir, 'test.db'))
+    'SQLALCHEMY_DATABASE_URI': os.environ.get(
+        'SQLALCHEMY_DATABASE_URI',
+        'sqlite:///' + os.path.join(basedir, 'test.db')
+    )
 })
-##from flask_cors import CORS
 
-#CORS(app)
-
+# from flask_cors import CORS
+# CORS(app)
