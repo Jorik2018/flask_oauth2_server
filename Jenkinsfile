@@ -5,6 +5,8 @@ pipeline {
         APP_DIR = 'C:\\Apps\\flask-oauth2'
         SERVICE_NAME = 'Flask OAuth2'
         PYTHONUNBUFFERED = '1'
+        PYTHON_HOME = 'C:\\Tools\\Python312'
+        PATH = "${PYTHON_HOME};${PYTHON_HOME}\\Scripts;${env.PATH}"
     }
 
     stages {
