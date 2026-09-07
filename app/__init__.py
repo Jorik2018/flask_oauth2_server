@@ -1,8 +1,21 @@
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from flask import Flask
+
 from .models import db
 from .oauth2 import config_oauth
 from .routes import bp
+
+
+# Root del proyecto:
+# C:\Apps\flask-oauth2
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Carga:
+# C:\Apps\flask-oauth2\.env
+load_dotenv(BASE_DIR / ".env")
 
 
 def create_app(config=None):
@@ -22,8 +35,6 @@ def create_app(config=None):
         elif config.endswith('.py'):
             app.config.from_pyfile(config)
 
-    print(app.config)
-
     setup_app(app)
 
     return app
@@ -32,6 +43,7 @@ def create_app(config=None):
 def setup_app(app):
     db.init_app(app)
     config_oauth(app)
+
     app.register_blueprint(
         bp,
         url_prefix=app.config['APPLICATION_ROOT']
@@ -42,13 +54,19 @@ def setup_app(app):
         db.create_all()
 
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+db_uri = os.environ.get('SQLALCHEMY_DATABASE_URI')
+
+if not db_uri:
+    raise RuntimeError(
+        f'SQLALCHEMY_DATABASE_URI not found in {BASE_DIR / ".env"}'
+    )
+
 
 app = create_app({
     'SECRET_KEY': 'secret',
     'OAUTH2_REFRESH_TOKEN_GENERATOR': True,
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'SQLALCHEMY_DATABASE_URI': os.environ['SQLALCHEMY_DATABASE_URI'],
+    'SQLALCHEMY_DATABASE_URI': db_uri,
 })
 
 # from flask_cors import CORS
