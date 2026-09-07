@@ -243,30 +243,35 @@ pipeline {
                 '''
             }
         }
-        stage('Smoke Test') {
+stage('Health Check') {
     steps {
-        bat '''
-            @echo off
+        powershell '''
+            $hostName = "127.0.0.1"
+            $port = [int]$env:APP_PORT
+            $maxAttempts = 5
 
-            echo === Flask OAuth2 Smoke Test ===
+            for ($attempt = 1; $attempt -le $maxAttempts; $attempt++) {
+                Write-Host "Health check $attempt/$maxAttempts..."
+                Write-Host "Checking ${hostName}:${port}"
 
-            timeout /t 3 /nobreak >nul
+                $result = Test-NetConnection `
+                    -ComputerName $hostName `
+                    -Port $port `
+                    -WarningAction SilentlyContinue
 
-            echo Testing:
-            echo http://127.0.0.1:%APP_PORT%%APP_BASE_PATH%/
+                if ($result.TcpTestSucceeded) {
+                    Write-Host "Flask service is listening on port $port."
+                    exit 0
+                }
 
-            curl --fail ^
-                --silent ^
-                --show-error ^
-                "http://127.0.0.1:%APP_PORT%%APP_BASE_PATH%/" ^
-                >nul
+                Write-Host "Port $port is not available yet."
 
-            if errorlevel 1 (
-                echo ERROR: Flask OAuth2 HTTP test failed.
-                exit /b 1
-            )
+                if ($attempt -lt $maxAttempts) {
+                    Start-Sleep -Seconds 5
+                }
+            }
 
-            echo Flask OAuth2 HTTP test OK
+            throw "Flask OAuth2 is not listening on ${hostName}:${port}"
         '''
     }
 }
