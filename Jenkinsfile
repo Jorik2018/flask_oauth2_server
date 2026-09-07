@@ -27,41 +27,37 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                bat '''
-                    @echo off
-                    python -m pip install --upgrade pip
-                    python -m pip install -r requirements.txt
-                    python -m pip install waitress python-dotenv
-                '''
-            }
-        }
+stage('Install Dependencies') {
+    steps {
+        bat '''
+            @echo off
 
-        stage('Create .env') {
-            steps {
-                withCredentials([
-                    string(
-                        credentialsId: 'SQLALCHEMY_DATABASE_URI',
-                        variable: 'DB_URI'
-                    )
-                ]) {
-                    bat '''
-                        @echo off
-                        (
-                            echo AUTHLIB_INSECURE_TRANSPORT=1
-                            echo APPLICATION_ROOT=/api/oauth
-                            echo SCRIPT_NAME=/api/oauth
-                            echo FLASK_ENV=development
-                            echo DEBUG=True
-                            echo FLASK_APP=app
-                            echo SQLALCHEMY_DATABASE_URI=%DB_URI%
-                        ) > .env
-                    '''
-                }
-            }
-        }
+            python -m pip install --upgrade pip
+            python -m pip install pipenv
 
+            pipenv install --deploy
+
+            pipenv run python -m pip install waitress python-dotenv
+        '''
+    }
+}
+
+stage('Create .env') {
+    steps {
+        withCredentials([
+            string(
+                credentialsId: 'SQLALCHEMY_DATABASE_URI',
+                variable: 'DB_URI'
+            )
+        ]) {
+            bat '''
+                @echo off
+
+                python -c "import os; from pathlib import Path; Path('.env').write_text('AUTHLIB_INSECURE_TRANSPORT=1\\nAPPLICATION_ROOT=/api/oauth\\nSCRIPT_NAME=/api/oauth\\nFLASK_ENV=development\\nDEBUG=True\\nFLASK_APP=app\\nSQLALCHEMY_DATABASE_URI=' + os.environ['DB_URI'] + '\\n', encoding='utf-8')"
+            '''
+        }
+    }
+}
         stage('Validate Application') {
             steps {
                 bat '''
