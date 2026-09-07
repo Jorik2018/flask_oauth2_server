@@ -2,18 +2,25 @@ pipeline {
     agent any
 
     options {
-        // Evita que Jenkins haga checkout automático y luego nosotros otro checkout.
         skipDefaultCheckout(true)
     }
 
     environment {
         APP_DIR = 'C:\\Apps\\flask-oauth2'
+
+        // ID interno del servicio Windows
+        SERVICE_ID = 'flask-oauth2'
+
+        // Nombre visible
         SERVICE_NAME = 'Flask OAuth2'
 
         PYTHON_HOME = 'C:\\Tools\\Python312'
         PATH = "${PYTHON_HOME};${PYTHON_HOME}\\Scripts;${env.PATH}"
 
         PYTHONUNBUFFERED = '1'
+
+        // Ajustar si tu service_manager.py está en otra ubicación
+        SERVICE_MANAGER = 'D:\\wildfly\\bin\\service_manager.py'
     }
 
     stages {
@@ -69,6 +76,8 @@ pipeline {
                         @echo off
 
                         .venv\\Scripts\\python.exe -c "import os; from pathlib import Path; Path('.env').write_text('AUTHLIB_INSECURE_TRANSPORT=1\\nAPPLICATION_ROOT=/api/oauth\\nSCRIPT_NAME=/api/oauth\\nFLASK_ENV=development\\nDEBUG=True\\nFLASK_APP=app\\nSQLALCHEMY_DATABASE_URI=' + os.environ['DB_URI'] + '\\n', encoding='utf-8')"
+
+                        if errorlevel 1 exit /b 1
                     '''
                 }
             }
@@ -83,7 +92,7 @@ pipeline {
 
                     .venv\\Scripts\\python.exe --version
 
-                    .venv\\Scripts\\python.exe -c "import flask; print('Flask OK:', flask.__version__)"
+                    .venv\\Scripts\\python.exe -c "from importlib.metadata import version; print('Flask OK:', version('flask'))"
                     if errorlevel 1 exit /b 1
 
                     .venv\\Scripts\\python.exe -c "import authlib; print('Authlib OK:', authlib.__version__)"
@@ -116,25 +125,25 @@ pipeline {
             }
         }
 
-stage('Stop Service') {
-    steps {
-        bat '''
-            @echo off
+        stage('Stop Service') {
+            steps {
+                bat '''
+                    @echo off
 
-            sc query "%SERVICE_NAME%" >nul 2>&1
+                    echo === Stopping service ===
 
-            if %ERRORLEVEL% EQU 0 (
-                echo Stopping existing service...
-                net stop "%SERVICE_NAME%" >nul 2>&1
-                echo Service stopped.
-            ) else (
-                echo Service does not exist yet. First deployment.
-            )
+                    if not exist "%SERVICE_MANAGER%" (
+                        echo ERROR: service_manager.py not found:
+                        echo %SERVICE_MANAGER%
+                        exit /b 1
+                    )
 
-            exit /b 0
-        '''
-    }
-}
+                    python "%SERVICE_MANAGER%" stop "%SERVICE_ID%"
+
+                    if errorlevel 1 exit /b 1
+                '''
+            }
+        }
 
         stage('Deploy Files') {
             steps {
@@ -185,7 +194,9 @@ stage('Stop Service') {
                     .venv\\Scripts\\python.exe --version
 
                     echo === Runtime dependencies ===
+
                     .venv\\Scripts\\python.exe -c "import flask, authlib, sqlalchemy, mysql.connector, waitress; print('Runtime dependencies OK')"
+
                     if errorlevel 1 exit /b 1
                 '''
             }
@@ -196,11 +207,36 @@ stage('Stop Service') {
                 bat '''
                     @echo off
 
-                    cd /d "%APP_DIR%"
+                    echo === Installing / updating Windows service ===
 
-                    call install-flask-oauth2-service.bat
+                    python "%SERVICE_MANAGER%" install "%SERVICE_ID%" "%APP_DIR%" ^
+                        --type flask ^
+                        --name "%SERVICE_NAME%" ^
+                        --description "Flask OAuth2 Server" ^
+                        --host 0.0.0.0 ^
+                        --port 5000 ^
+                        --wsgi-app app:app
 
                     if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+
+        stage('Start Service') {
+            steps {
+                bat '''
+                    @echo off
+
+                    echo === Starting service ===
+
+                    python "%SERVICE_MANAGER%" start "%SERVICE_ID%"
+
+                    if errorlevel 1 exit /b 1
+
+                    echo.
+                    echo === Service status ===
+
+                    python "%SERVICE_MANAGER%" status "%SERVICE_ID%"
                 '''
             }
         }
