@@ -48,10 +48,7 @@ app = create_app({
     'SECRET_KEY': 'secret',
     'OAUTH2_REFRESH_TOKEN_GENERATOR': True,
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-    'SQLALCHEMY_DATABASE_URI': os.environ.get(
-        'SQLALCHEMY_DATABASE_URI',
-        'sqlite:///' + os.path.join(basedir, 'test.db')
-    )
+    'SQLALCHEMY_DATABASE_URI': os.environ['SQLALCHEMY_DATABASE_URI'],
 })
 
 # from flask_cors import CORS
