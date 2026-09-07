@@ -21,6 +21,9 @@ pipeline {
 
         // Ajustar si tu service_manager.py está en otra ubicación
         SERVICE_MANAGER = 'D:\\wildfly\\bin\\service_manager.py'
+        APP_HOST = '0.0.0.0'
+    APP_PORT = '5000'
+    WSGI_APP = 'app:app'
     }
 
     stages {
@@ -203,24 +206,24 @@ pipeline {
         }
 
         stage('Install / Update Service') {
-            steps {
-                bat '''
-                    @echo off
+    steps {
+        bat '''
+            @echo off
 
-                    echo === Installing / updating Windows service ===
+            echo === Installing / updating Windows service ===
 
-                    python "%SERVICE_MANAGER%" install "%SERVICE_ID%" "%APP_DIR%" ^
-                        --type flask ^
-                        --name "%SERVICE_NAME%" ^
-                        --description "Flask OAuth2 Server" ^
-                        --host 0.0.0.0 ^
-                        --port 5000 ^
-                        --wsgi-app app:app
+            python "%SERVICE_MANAGER%" install "%SERVICE_ID%" "%APP_DIR%" ^
+                --type flask ^
+                --name "%SERVICE_NAME%" ^
+                --description "%SERVICE_DESCRIPTION%" ^
+                --host "%APP_HOST%" ^
+                --port "%APP_PORT%" ^
+                --wsgi-app "%WSGI_APP%"
 
-                    if errorlevel 1 exit /b 1
-                '''
-            }
-        }
+            if errorlevel 1 exit /b 1
+        '''
+    }
+}
 
         stage('Start Service') {
             steps {
@@ -240,6 +243,33 @@ pipeline {
                 '''
             }
         }
+        stage('Smoke Test') {
+    steps {
+        bat '''
+            @echo off
+
+            echo === Flask OAuth2 Smoke Test ===
+
+            timeout /t 3 /nobreak >nul
+
+            echo Testing:
+            echo http://127.0.0.1:%APP_PORT%%APP_BASE_PATH%/
+
+            curl --fail ^
+                --silent ^
+                --show-error ^
+                "http://127.0.0.1:%APP_PORT%%APP_BASE_PATH%/" ^
+                >nul
+
+            if errorlevel 1 (
+                echo ERROR: Flask OAuth2 HTTP test failed.
+                exit /b 1
+            )
+
+            echo Flask OAuth2 HTTP test OK
+        '''
+    }
+}
     }
 
     post {
