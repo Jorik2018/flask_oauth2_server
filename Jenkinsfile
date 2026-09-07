@@ -17,6 +17,7 @@ pipeline {
         stage('Python') {
             steps {
                 bat '''
+                where python
                     @echo off
                     python --version
                     python -m pip --version
