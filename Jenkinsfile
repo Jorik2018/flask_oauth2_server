@@ -251,6 +251,19 @@ stage('Inspect Database Schema') {
         '''
     }
 }
+stage('Patch OAuth Schema') {
+    steps {
+        bat '''
+            @echo off
+
+            cd /d "%APP_DIR%"
+
+            .venv\\Scripts\\python.exe -c "from app import app; from app.models import db; from sqlalchemy import text; ctx=app.app_context(); ctx.push(); cols={r[0] for r in db.session.execute(text('SHOW COLUMNS FROM oauth2_code')).fetchall()}; db.session.execute(text('ALTER TABLE oauth2_code ADD COLUMN acr TEXT NULL')) if 'acr' not in cols else None; db.session.execute(text('ALTER TABLE oauth2_code ADD COLUMN amr TEXT NULL')) if 'amr' not in cols else None; db.session.commit(); ctx.pop()"
+
+            if errorlevel 1 exit /b 1
+        '''
+    }
+}
 
         stage('Start Service') {
             steps {
