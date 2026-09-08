@@ -225,6 +225,18 @@ pipeline {
     }
 }
 
+stage('Inspect OAuth Tables') {
+    steps {
+        bat '''
+            @echo off
+
+            cd /d "%APP_DIR%"
+
+            .venv\\Scripts\\python.exe -c "from app.models import OAuth2AuthorizationCode; print([(c.name, str(c.type), c.nullable) for c in OAuth2AuthorizationCode.__table__.columns])"
+        '''
+    }
+}
+
         stage('Start Service') {
             steps {
                 bat '''
