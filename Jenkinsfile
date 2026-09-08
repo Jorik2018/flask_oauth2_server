@@ -225,46 +225,6 @@ pipeline {
     }
 }
 
-stage('Inspect OAuth Tables') {
-    steps {
-        bat '''
-            @echo off
-
-            cd /d "%APP_DIR%"
-
-            .venv\\Scripts\\python.exe -c "from app.models import OAuth2AuthorizationCode; print([(c.name, str(c.type), c.nullable) for c in OAuth2AuthorizationCode.__table__.columns])"
-        '''
-    }
-}
-stage('Inspect Database Schema') {
-    steps {
-        bat '''
-            @echo off
-
-            cd /d "%APP_DIR%"
-
-            echo === Current MySQL oauth2_code columns ===
-
-            .venv\\Scripts\\python.exe -c "from app import app; from app.models import db; from sqlalchemy import text; ctx=app.app_context(); ctx.push(); rows=db.session.execute(text('SHOW COLUMNS FROM oauth2_code')).fetchall(); [print(tuple(r)) for r in rows]; ctx.pop()"
-
-            if errorlevel 1 exit /b 1
-        '''
-    }
-}
-stage('Patch OAuth Schema') {
-    steps {
-        bat '''
-            @echo off
-
-            cd /d "%APP_DIR%"
-
-            .venv\\Scripts\\python.exe -c "from app import app; from app.models import db; from sqlalchemy import text; ctx=app.app_context(); ctx.push(); cols={r[0] for r in db.session.execute(text('SHOW COLUMNS FROM oauth2_code')).fetchall()}; db.session.execute(text('ALTER TABLE oauth2_code ADD COLUMN acr TEXT NULL')) if 'acr' not in cols else None; db.session.execute(text('ALTER TABLE oauth2_code ADD COLUMN amr TEXT NULL')) if 'amr' not in cols else None; db.session.commit(); ctx.pop()"
-
-            if errorlevel 1 exit /b 1
-        '''
-    }
-}
-
         stage('Start Service') {
             steps {
                 bat '''
