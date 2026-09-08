@@ -236,6 +236,21 @@ stage('Inspect OAuth Tables') {
         '''
     }
 }
+stage('Inspect Database Schema') {
+    steps {
+        bat '''
+            @echo off
+
+            cd /d "%APP_DIR%"
+
+            echo === Current MySQL oauth2_code columns ===
+
+            .venv\\Scripts\\python.exe -c "from app import app; from app.models import db; from sqlalchemy import text; ctx=app.app_context(); ctx.push(); rows=db.session.execute(text('SHOW COLUMNS FROM oauth2_code')).fetchall(); [print(tuple(r)) for r in rows]; ctx.pop()"
+
+            if errorlevel 1 exit /b 1
+        '''
+    }
+}
 
         stage('Start Service') {
             steps {
