@@ -54,8 +54,6 @@ def home():
         session['id'] = user.id
         # if user is not just to log in, but need to head back to the auth page, then go for it
         next_page = request.args.get('next')
-        print('hola')
-
         if next_page:
             return redirect(next_page)
         return redirect(url_for('.home'))

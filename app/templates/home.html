@@ -82,43 +82,142 @@
                                     <div class="text-center">
                                         <h4 class="text-secondary">Inicio de Sesión</h4>
                                     </div>
-                                    <form action="" method="POST">
-                                        <!-- Email input -->
-                                        <div class="form-outline mb-4">
-                                            <label class="form-label fw-bold" for="name">Correo Electrónico: <span
-                                                    style="color: red;">*</span></label>
-                                            <input name="name" id="name" required="required" class="form-control" />
-                                        </div>
+                                    <form action="" method="POST" id="loginForm">
 
-                                        <!-- Password input -->
-                                        <div class="form-outline mb-4">
-                                            <label class="form-label fw-bold" for="pass">Contraseña: <span
-                                                    style="color: red;">*</span></label>
-                                            <input type="password" name="pass" required="required" id="pass"
-                                                class="form-control" />
-                                        </div>
+    <div class="form-outline mb-4">
+        <label class="form-label fw-bold" for="name">
+            Correo Electrónico:
+            <span style="color: red;">*</span>
+        </label>
 
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <!-- Checkbox -->
-                                            <div class="form-check mb-0">
-                                                <input class="form-check-input me-2" type="checkbox" value=""
-                                                    id="form2Example3" />
-                                                <label class="form-check-label" for="form2Example3">
-                                                    Recuerdame
-                                                </label>
-                                            </div>
-                                            <a href="#" class="text-primary">Olvido su contraseña?</a>
-                                        </div>
+        <input
+            name="name"
+            id="name"
+            required
+            class="form-control"
+        />
+    </div>
 
-                                        <div class="text-center text-lg-start mt-4">
-                                            <div class="d-grid gap-2 mb-2">
-                                                <button class="btn btn-danger fw-bold" type="submit">Iniciar
-                                                    Sesión</button>
-                                            </div>
-                                            <a href="#" class="fw-bold text-primary">Crear Nueva Cuenta</a>
-                                        </div>
+    <div class="form-outline mb-4">
+        <label class="form-label fw-bold" for="pass">
+            Contraseña:
+            <span style="color: red;">*</span>
+        </label>
 
-                                    </form>
+        <input
+            type="password"
+            name="pass"
+            required
+            id="pass"
+            class="form-control"
+        />
+    </div>
+
+    <!-- CAPTCHA -->
+    <div class="form-outline mb-4">
+
+        <label class="form-label fw-bold">
+            Código de seguridad:
+            <span style="color:red;">*</span>
+        </label>
+
+        <div class="d-flex align-items-center gap-2">
+
+            <img
+                id="captchaImage"
+                alt="Código de seguridad"
+                style="
+                    width: 160px;
+                    height: 55px;
+                    border: 1px solid #ced4da;
+                    border-radius: 5px;
+                    object-fit: fill;
+                "
+            >
+
+            <button
+                id="captchaReload"
+                type="button"
+                class="btn btn-outline-secondary"
+                title="Generar nuevo código"
+            >
+                ↻
+            </button>
+
+            <input
+                id="captcha"
+                name="captcha"
+                class="form-control"
+                maxlength="5"
+                autocomplete="off"
+                required
+                style="
+                    text-transform: uppercase;
+                    max-width: 130px;
+                "
+            >
+
+        </div>
+
+        <!-- ID DEL CAPTCHA -->
+        <input
+            id="captchaId"
+            name="captchaId"
+            type="hidden"
+        >
+
+        <div
+            id="captchaError"
+            class="text-danger mt-1"
+            style="display:none;"
+        ></div>
+
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+
+        <div class="form-check mb-0">
+            <input
+                class="form-check-input me-2"
+                type="checkbox"
+                id="form2Example3"
+            >
+
+            <label
+                class="form-check-label"
+                for="form2Example3"
+            >
+                Recuérdame
+            </label>
+        </div>
+
+        <a href="#" class="text-primary">
+            ¿Olvidó su contraseña?
+        </a>
+
+    </div>
+
+    <div class="text-center text-lg-start mt-4">
+
+        <div class="d-grid gap-2 mb-2">
+
+            <button
+                id="loginButton"
+                class="btn btn-danger fw-bold"
+                type="submit"
+            >
+                Iniciar Sesión
+            </button>
+
+        </div>
+
+        <a href="#" class="fw-bold text-primary">
+            Crear Nueva Cuenta
+        </a>
+
+    </div>
+
+</form>
 
                                 </div>
                             </div>
@@ -128,6 +227,7 @@
             </div>
 
             {% endif %}
+
 
         </div>
     </section>
