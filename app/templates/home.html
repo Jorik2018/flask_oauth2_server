@@ -234,5 +234,175 @@
     <!-- Section: Design Block -->
 
 </body>
+<script>
+    let captchaRefreshTimer = null;
 
+    const captchaImage = document.getElementById('captchaImage');
+    const captchaInput = document.getElementById('captcha');
+    const captchaIdInput = document.getElementById('captchaId');
+    const captchaReload = document.getElementById('captchaReload');
+    const captchaError = document.getElementById('captchaError');
+    const loginForm = document.getElementById('loginForm');
+
+
+    async function loadCaptcha(previousCaptchaId = null) {
+
+        try {
+
+            captchaReload.disabled = true;
+
+            captchaError.style.display = 'none';
+            captchaError.textContent = '';
+
+            if (captchaRefreshTimer) {
+                clearTimeout(captchaRefreshTimer);
+                captchaRefreshTimer = null;
+            }
+
+
+            let url = '/api/captcha';
+
+            if (previousCaptchaId) {
+                url += '?previousCaptchaId=' +
+                    encodeURIComponent(previousCaptchaId);
+            }
+
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+
+            if (!response.ok) {
+                throw new Error(
+                    'Error HTTP ' + response.status
+                );
+            }
+
+
+            const captcha = await response.json();
+
+
+            captchaIdInput.value = captcha.captchaId;
+
+            captchaImage.src = captcha.image;
+
+            captchaInput.value = '';
+
+
+            const expiresIn =
+                Number(captcha.expiresIn || 180);
+
+
+            const refreshInSeconds =
+                Math.max(expiresIn - 5, 1);
+
+
+            console.log(
+                `Captcha expira en ${expiresIn}s. ` +
+                `Renovación en ${refreshInSeconds}s`
+            );
+
+
+            captchaRefreshTimer = setTimeout(
+                () => {
+                    loadCaptcha(captcha.captchaId);
+                },
+                refreshInSeconds * 1000
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                'Captcha load error:',
+                error
+            );
+
+
+            captchaError.textContent =
+                'No se pudo cargar el código de seguridad.';
+
+            captchaError.style.display = 'block';
+
+
+        } finally {
+
+            captchaReload.disabled = false;
+        }
+    }
+
+
+    captchaReload.addEventListener(
+        'click',
+        () => {
+            loadCaptcha(
+                captchaIdInput.value
+            );
+        }
+    );
+
+
+    captchaInput.addEventListener(
+        'input',
+        function () {
+
+            this.value = this.value
+                .toUpperCase()
+                .replace(/\s/g, '');
+
+            captchaError.style.display = 'none';
+        }
+    );
+
+
+    loginForm.addEventListener(
+        'submit',
+        function (event) {
+
+            const captcha =
+                captchaInput.value.trim();
+
+            if (!captcha) {
+
+                event.preventDefault();
+
+                captchaError.textContent =
+                    'Ingrese el código de seguridad.';
+
+                captchaError.style.display =
+                    'block';
+
+                captchaInput.focus();
+
+                return;
+            }
+
+
+            if (!captchaIdInput.value) {
+
+                event.preventDefault();
+
+                captchaError.textContent =
+                    'El código de seguridad no está disponible.';
+
+                captchaError.style.display =
+                    'block';
+
+                loadCaptcha();
+            }
+        }
+    );
+
+
+    document.addEventListener(
+        'DOMContentLoaded',
+        () => {
+            loadCaptcha();
+        }
+    );
+</script>
 </html>
